@@ -129,9 +129,15 @@ You will be prompted to confirm before any data is deleted.
 |---|---|
 | Nether disabled | `ALLOW_NETHER=false` in compose.yaml |
 | End disabled | `allow-end: false` in config/bukkit.yml |
-| Hostile mobs disabled | `SPAWN_MONSTERS=false` in compose.yaml |
+| Hostile mobs disabled | `DIFFICULTY=peaceful` in compose.yaml (see [note](#why-peaceful-difficulty-instead-of-spawn_monstersfalse)) |
 | PvP disabled | `PVP=false` in compose.yaml |
 | Enchanting disabled | Data pack removes enchanting_table recipe |
 | Brewing disabled | Data pack removes brewing_stand and glass_bottle recipes |
 | Authentication enforced | `ONLINE_MODE=true` in compose.yaml |
 | Whitelist enforced | `ENABLE_WHITELIST=true` + `ENFORCE_WHITELIST=true` |
+
+### Why `DIFFICULTY=peaceful` instead of `SPAWN_MONSTERS=false`
+
+`SPAWN_MONSTERS=false` (the `spawn-monsters` server property) only prevents **natural** hostile mob spawning — mobs that appear in dark areas, at night, or in caves. It does **not** prevent mob spawners (the cage-like blocks found in dungeons and mineshafts) from producing hostile mobs like skeletons. Spawner blocks bypass the `spawn-monsters` property entirely.
+
+`DIFFICULTY=peaceful` is strictly stronger: peaceful difficulty removes all hostile mobs regardless of their source, including those from spawner blocks.
