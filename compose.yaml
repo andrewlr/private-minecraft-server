@@ -22,6 +22,7 @@ services:
       ALLOW_NETHER: "false"
       ENABLE_RCON: "true"
       RCON_PASSWORD: ${RCON_PASSWORD}
+      RCON_CMDS_STARTUP: "difficulty peaceful"
       COPY_CONFIG_DEST: "/data"
     volumes:
       - mc-data:/data

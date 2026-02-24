@@ -129,19 +129,20 @@ You will be prompted to confirm before any data is deleted.
 |---|---|
 | Nether disabled | `ALLOW_NETHER=false` in compose.yaml |
 | End disabled | `allow-end: false` in config/bukkit.yml |
-| Hostile mobs disabled | `SPAWN_MONSTERS=false` + `DIFFICULTY=peaceful` + `OVERRIDE_SERVER_PROPERTIES=true` in compose.yaml (see [note](#why-all-three-hostile-mob-settings-are-needed)) |
+| Hostile mobs disabled | `SPAWN_MONSTERS=false` + `DIFFICULTY=peaceful` + `RCON_CMDS_STARTUP="difficulty peaceful"` + `OVERRIDE_SERVER_PROPERTIES=true` in compose.yaml (see [note](#why-all-four-hostile-mob-settings-are-needed)) |
 | PvP disabled | `PVP=false` in compose.yaml |
 | Enchanting disabled | Data pack removes enchanting_table recipe |
 | Brewing disabled | Data pack removes brewing_stand and glass_bottle recipes |
 | Authentication enforced | `ONLINE_MODE=true` in compose.yaml |
 | Whitelist enforced | `ENABLE_WHITELIST=true` + `ENFORCE_WHITELIST=true` |
 
-### Why all three hostile-mob settings are needed
+### Why all four hostile-mob settings are needed
 
-Three environment variables work together to ensure no hostile mobs spawn:
+Four environment variables work together to ensure no hostile mobs spawn:
 
 - **`SPAWN_MONSTERS=false`** — sets the `spawn-monsters` server property to `false`, disabling natural hostile mob spawning (dark areas, nighttime, caves). This alone does not prevent mob spawners (dungeon/mineshaft cage blocks) from producing hostile mobs.
 - **`DIFFICULTY=peaceful`** — strictly stronger: peaceful difficulty removes all hostile mobs regardless of source, including spawner blocks. However, Minecraft stores difficulty in `level.dat` (the world save), so this setting only takes effect automatically for **new** worlds. An existing world retains whatever difficulty it was created with.
-- **`OVERRIDE_SERVER_PROPERTIES=true`** — tells the `itzg/minecraft-server` image to rewrite `server.properties` from environment variables on every startup. Without this, the image preserves the existing `server.properties` and env-var changes (including `difficulty` and `spawn-monsters`) are silently ignored for existing worlds.
+- **`OVERRIDE_SERVER_PROPERTIES=true`** — tells the `itzg/minecraft-server` image to rewrite `server.properties` from environment variables on every startup. Without this, the image preserves the existing `server.properties` and env-var changes (including `difficulty` and `spawn-monsters`) are silently ignored.
+- **`RCON_CMDS_STARTUP="difficulty peaceful"`** — runs the `/difficulty peaceful` command via RCON after the server finishes starting. This is the critical fix for existing worlds: `server.properties` sets the *default* difficulty, but the world's `level.dat` overrides it at runtime. The RCON command forces the running server to update `level.dat` directly, ensuring peaceful difficulty actually takes effect every startup.
 
-All three are required: `OVERRIDE_SERVER_PROPERTIES` ensures the env vars actually reach `server.properties`, `DIFFICULTY=peaceful` eliminates all hostile mobs including spawner mobs, and `SPAWN_MONSTERS=false` acts as a belt-and-suspenders safeguard.
+All four are required: `OVERRIDE_SERVER_PROPERTIES` ensures the env vars reach `server.properties`, `DIFFICULTY=peaceful` sets the correct default, `SPAWN_MONSTERS=false` acts as a belt-and-suspenders safeguard, and `RCON_CMDS_STARTUP` forces the running world to adopt peaceful difficulty even when `level.dat` says otherwise.
