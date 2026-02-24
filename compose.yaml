@@ -16,7 +16,7 @@ services:
       ENABLE_WHITELIST: "true"
       ENFORCE_WHITELIST: "true"
       PVP: "false"
-      SPAWN_MONSTERS: "false"
+      DIFFICULTY: "peaceful"
       ALLOW_NETHER: "false"
       ENABLE_RCON: "true"
       RCON_PASSWORD: ${RCON_PASSWORD}
