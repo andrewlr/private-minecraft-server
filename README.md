@@ -129,15 +129,17 @@ You will be prompted to confirm before any data is deleted.
 |---|---|
 | Nether disabled | `ALLOW_NETHER=false` in compose.yaml |
 | End disabled | `allow-end: false` in config/bukkit.yml |
-| Hostile mobs disabled | `DIFFICULTY=peaceful` in compose.yaml (see [note](#why-peaceful-difficulty-instead-of-spawn_monstersfalse)) |
+| Hostile mobs disabled | `DIFFICULTY=peaceful` + `SPAWN_MONSTERS=false` + `OVERRIDE_SERVER_PROPERTIES=true` in compose.yaml (see [note](#hostile-mob-controls)) |
 | PvP disabled | `PVP=false` in compose.yaml |
 | Enchanting disabled | Data pack removes enchanting_table recipe |
 | Brewing disabled | Data pack removes brewing_stand and glass_bottle recipes |
 | Authentication enforced | `ONLINE_MODE=true` in compose.yaml |
 | Whitelist enforced | `ENABLE_WHITELIST=true` + `ENFORCE_WHITELIST=true` |
 
-### Why `DIFFICULTY=peaceful` instead of `SPAWN_MONSTERS=false`
+### Hostile mob controls
 
-`SPAWN_MONSTERS=false` (the `spawn-monsters` server property) only prevents **natural** hostile mob spawning — mobs that appear in dark areas, at night, or in caves. It does **not** prevent mob spawners (the cage-like blocks found in dungeons and mineshafts) from producing hostile mobs like skeletons. Spawner blocks bypass the `spawn-monsters` property entirely.
+Three settings work together to reliably prevent all hostile mob spawning:
 
-`DIFFICULTY=peaceful` is strictly stronger: peaceful difficulty removes all hostile mobs regardless of their source, including those from spawner blocks.
+- **`DIFFICULTY=peaceful`** — Peaceful difficulty removes all hostile mobs regardless of their source, including those from mob spawner blocks in dungeons and mineshafts. `SPAWN_MONSTERS=false` alone does not prevent spawner-based mobs.
+- **`SPAWN_MONSTERS=false`** — Disables natural hostile mob spawning as a fallback layer of protection.
+- **`OVERRIDE_SERVER_PROPERTIES=true`** — Forces the itzg Docker image to regenerate `server.properties` from environment variables on every container start. Without this, Minecraft stores difficulty in the world's `level.dat` file, and changes to `DIFFICULTY` in compose.yaml may not take effect on existing worlds.
