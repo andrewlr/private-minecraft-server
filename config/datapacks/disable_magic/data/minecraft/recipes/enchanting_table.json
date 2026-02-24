@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "conditions": [
+    {
+      "condition": "minecraft:impossible"
+    }
+  ],
+  "ingredients": [],
+  "result": {
+    "item": "minecraft:enchanting_table",
+    "count": 0
+  }
+}
